@@ -1,0 +1,25 @@
+# User live data & private records
+data.json
+
+# Backups and generated invoices
+backup/*
+!backup/.gitkeep
+invoices/*
+!invoices/.gitkeep
+
+# Backup temporary files
+*.old
+
+# Windows shortcuts & system files
+*.lnk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE & Editor folders
+.vscode/
+.idea/
+
+# Node runtime
+node_modules/
+npm-debug.log*

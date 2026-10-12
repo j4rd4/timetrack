@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeTracker Pro</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Navigation Bar (Tabs & Global actions) -->
+    <header class="app-topbar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <span class="brand-name">TimeTrack</span>
+      </div>
+
+      <!-- Tabs Bar -->
+      <div class="tabs-wrapper">
+        <div class="tabs-list" id="tabsList">
+          <!-- Dynamicky generované záložky -->
+        </div>
+        <button id="addTabBtn" class="btn-icon" title="Přidat novou záložku">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Nová záložka</span>
+        </button>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="storage-status" id="storageStatus" title="Stav zápisu dat">
+          <span class="status-dot"></span>
+          <span class="status-text" id="storageStatusText">data.json</span>
+        </div>
+        <button id="exportBtn" class="btn-ghost" title="Exportovat data (JSON)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Záloha</span>
+        </button>
+        <label class="btn-ghost" title="Importovat data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Nahrát</span>
+          <input type="file" id="importInput" accept=".json" style="display: none;">
+        </label>
+      </div>
+    </header>
+
+    <!-- Header / Stats Dashboard for the active tab -->
+    <section class="dashboard-header">
+      <div class="header-left">
+        <div class="month-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span id="currentMonthName">Měsíc</span>
+        </div>
+        <h1 class="week-title" id="weekRangeDisplay">Týden: --.–. – --.–.----</h1>
+      </div>
+
+      <div class="header-controls">
+        <div class="week-navigation">
+          <button id="prevWeekBtn" class="nav-btn" title="Předchozí týden (Šipka vlevo)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button id="todayBtn" class="btn-today">Dnes</button>
+          <button id="nextWeekBtn" class="nav-btn" title="Další týden (Šipka vpravo)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+        <button id="invoiceMonthBtn" class="btn-invoice" title="Fakturovat vybraný měsíc">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span id="invoiceMonthBtnText">Fakturovat 9/2026</span>
+        </button>
+      </div>
+
+      <!-- Monthly and Weekly Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">
+            <span>Pracovní fond měsíce</span>
+            <span class="stat-hint" id="workingDaysCount">(21 prac. dní)</span>
+          </div>
+          <div class="stat-fund-row">
+            <div class="stat-value" id="monthWorkingHours">0 h</div>
+            <div class="workload-control" title="Velikost úvazku pro aktuální záložku">
+              <label for="workloadInput">Úvazek:</label>
+              <div class="workload-input-wrapper">
+                <input type="number" id="workloadInput" min="5" max="200" step="5" value="100" class="workload-input">
+                <span class="percent-symbol">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="stat-subtext" id="workloadSubtext">Počet prac. hodin (100% úvazek)</div>
+        </div>
+
+        <div class="stat-card highlight">
+          <div class="stat-label">
+            <span>Odpracováno</span>
+            <span class="stat-badge" id="monthCoveragePercent">0 %</span>
+          </div>
+          <div class="stat-value-group">
+            <div class="stat-value primary-color" id="monthLoggedHours">0h 0m</div>
+            <div class="stat-md-value" id="monthLoggedMD">(0.00 MD)</div>
+          </div>
+          <div class="stat-progress-bar">
+            <div class="stat-progress-fill" id="monthProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">
+            <span>Odpracováno tento týden</span>
+            <span class="stat-badge" id="weekCoveragePercent">0 %</span>
+          </div>
+          <div class="stat-value" id="weekLoggedHours">0h 0m</div>
+          <div class="stat-progress-bar">
+            <div class="stat-progress-fill" id="weekProgressBar" style="width: 0%;"></div>
+          </div>
+          <div class="stat-breakdown" id="typesBreakdown">
+            <!-- Typy: work, meeting, off, sick -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legend & Fast Selector -->
+    <div class="legend-bar">
+      <div class="legend-title">Rychlá volba typu pro nový úsek:</div>
+      <div class="type-selectors">
+        <label class="type-badge type-work active" data-type="work">
+          <input type="radio" name="defaultEventType" value="work" checked>
+          <span class="dot"></span>
+          <span class="name">Práce (Work)</span>
+        </label>
+        <label class="type-badge type-meeting" data-type="meeting">
+          <input type="radio" name="defaultEventType" value="meeting">
+          <span class="dot"></span>
+          <span class="name">Schůzka (Meeting)</span>
+        </label>
+        <label class="type-badge type-off" data-type="off">
+          <input type="radio" name="defaultEventType" value="off">
+          <span class="dot"></span>
+          <span class="name">Volno (Off)</span>
+        </label>
+        <label class="type-badge type-sick" data-type="sick">
+          <input type="radio" name="defaultEventType" value="sick">
+          <span class="dot"></span>
+          <span class="name">Nemoc (Sick)</span>
+        </label>
+      </div>
+
+      <div class="legend-hint">
+        💡 <strong>Tip:</strong> Klikněte nebo táhněte v kalendáři pro vytvoření. Úseky lze roztahovat za spodní hranu, přesouvat a duplikovat.
+      </div>
+    </div>
+
+    <!-- Calendar View (Weekly Grid) -->
+    <main class="calendar-wrapper" id="calendarWrapper">
+      <div class="calendar-container" id="calendarContainer">
+        
+        <!-- Header row of days (Sticky) -->
+        <div class="calendar-header-row">
+          <div class="time-col-header">Čas</div>
+          <div class="days-headers-container" id="daysHeadersContainer">
+            <!-- 7 sloupců se dny Po-Ne -->
+          </div>
+        </div>
+
+        <!-- Main Body with Time Grid -->
+        <div class="calendar-body" id="calendarBody">
+          <!-- Time Axis Column -->
+          <div class="time-axis" id="timeAxis">
+            <!-- 24 hodin se 4x 15min dílky -->
+          </div>
+
+          <!-- 7 Day Columns Grid -->
+          <div class="days-columns-container" id="daysColumnsContainer">
+            <!-- 7 sloupců se sloty a renderovanými událostmi -->
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Event Quick Detail / Edit Modal -->
+    <div class="modal-overlay" id="eventModal" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="modalTitle">Upravit událost</h3>
+          <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Typ události</label>
+            <div class="modal-type-buttons" id="modalTypeButtons">
+              <button type="button" class="btn-type-opt" data-type="work">Práce</button>
+              <button type="button" class="btn-type-opt" data-type="meeting">Schůzka</button>
+              <button type="button" class="btn-type-opt" data-type="off">Volno</button>
+              <button type="button" class="btn-type-opt" data-type="sick">Nemoc</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="eventTitleInput">Popis / Název (volitelné)</label>
+            <input type="text" id="eventTitleInput" class="form-input" placeholder="např. Vývoj frontendu, Klient schůzka...">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="eventStartTime">Začátek</label>
+              <select id="eventStartTime" class="form-select"></select>
+            </div>
+            <div class="form-group">
+              <label for="eventEndTime">Konec</label>
+              <select id="eventEndTime" class="form-select"></select>
+            </div>
+          </div>
+
+          <div class="event-duration-info" id="eventDurationInfo">
+            Trvání: <strong>1h 0m</strong> (4 bloky)
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-left">
+            <button class="btn-danger" id="modalDeleteBtn" title="Smazat událost">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Smazat</span>
+            </button>
+            <button class="btn-secondary" id="modalDuplicateBtn" title="Duplikovat návazně">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Duplikovat</span>
+            </button>
+          </div>
+          <div class="modal-footer-right">
+            <button class="btn-cancel" id="modalCancelBtn">Zrušit</button>
+            <button class="btn-primary" id="modalSaveBtn">Uložit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Rename Modal -->
+    <div class="modal-overlay" id="tabRenameModal" style="display: none;">
+      <div class="modal-dialog small">
+        <div class="modal-header">
+          <h3>Přejmenovat záložku</h3>
+          <button class="modal-close-btn" id="tabRenameCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="tabNameInput">Název záložky</label>
+            <input type="text" id="tabNameInput" class="form-input" placeholder="např. Projekt Alfa, Interní...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" id="tabRenameCancelBtn">Zrušit</button>
+          <button class="btn-primary" id="tabRenameSaveBtn">Uložit název</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Generator & Template Modal -->
+    <div class="modal-overlay" id="invoiceModal" style="display: none;">
+      <div class="modal-dialog large">
+        <div class="modal-header">
+          <div class="modal-title-with-tabs">
+            <h3 id="invoiceModalTitle">Faktura za 9/2026</h3>
+            <div class="modal-nav-tabs">
+              <button type="button" class="modal-tab-btn active" id="invoiceTabIssueBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>Vystavení faktury</span>
+              </button>
+              <button type="button" class="modal-tab-btn" id="invoiceTabTemplateBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>Šablona faktury (Nastavení)</span>
+              </button>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="invoiceCloseBtn">&times;</button>
+        </div>
+
+        <!-- TAB 1: Issue & Generate Invoice -->
+        <div id="invoiceIssuePanel" class="modal-tab-panel active">
+          <div class="modal-body invoice-body-scroll">
+            
+            <!-- Status banner if invoice exists or not -->
+            <div class="invoice-status-banner" id="invoiceStatusBanner">
+              <div class="status-banner-content">
+                <div class="status-banner-icon" id="invoiceStatusIcon">ℹ️</div>
+                <div class="status-banner-text">
+                  <div class="status-banner-title" id="invoiceStatusTitle">Stav faktury</div>
+                  <div class="status-banner-desc" id="invoiceStatusDesc">Kontrola archivu faktur...</div>
+                </div>
+              </div>
+              <div class="status-banner-actions">
+                <a id="invoiceOpenExistingBtn" href="#" target="_blank" class="btn-success-small" style="display: none;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Otevřít existující PDF</span>
+                </a>
+                <label class="checkbox-overwrite-label" id="invoiceOverwriteLabel" style="display: none;">
+                  <input type="checkbox" id="invoiceOverwriteCheckbox">
+                  <span>Přegenerovat existující fakturu</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Invoicing Form Fields -->
+            <div class="invoice-form-grid">
+              <div class="form-row">
+                <div class="form-group flex-2">
+                  <label for="invFormNumber">Číslo faktury / Variabilní symbol</label>
+                  <input type="text" id="invFormNumber" class="form-input mono" placeholder="např. 20260101">
+                </div>
+                <div class="form-group flex-1">
+                  <label for="invFormClientCode">Kód odběratele</label>
+                  <input type="text" id="invFormClientCode" class="form-input mono" placeholder="např. PRJA">
+                </div>
+                <div class="form-group flex-2">
+                  <label>Název cílového souboru</label>
+                  <div class="filename-preview-badge" id="invFormFilenameBadge">20260101PRJA.pdf</div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="invFormIssueDate">Datum vystavení</label>
+                  <input type="date" id="invFormIssueDate" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label for="invFormDueDate">Datum splatnosti</label>
+                  <input type="date" id="invFormDueDate" class="form-input">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="invFormItemDesc">Popis položky na faktuře</label>
+                <textarea id="invFormItemDesc" class="form-textarea" rows="2" placeholder="Fakturuji dle objednávky..."></textarea>
+              </div>
+
+              <div class="form-row invoice-calc-row">
+                <div class="form-group">
+                  <label for="invFormMD">Odpracováno MD</label>
+                  <input type="number" id="invFormMD" step="0.01" min="0" class="form-input bold-number">
+                  <small class="form-hint" id="invFormMDHoursHint">0h 0m v měsíci</small>
+                </div>
+                <div class="form-group">
+                  <label for="invFormRate">Sazba za MD (Kč)</label>
+                  <input type="number" id="invFormRate" step="100" min="0" class="form-input bold-number">
+                </div>
+                <div class="form-group total-group">
+                  <div class="total-header-row">
+                    <label>Celkem k úhradě</label>
+                    <label class="checkbox-qr-label" title="Zahrnout platební QR kód na faktuře">
+                      <input type="checkbox" id="invFormIncludeQr" checked>
+                      <span>QR platba</span>
+                    </label>
+                  </div>
+                  <div class="invoice-total-amount" id="invFormTotalDisplay">0,00 Kč</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Toggle & Container -->
+            <div class="invoice-preview-toggle-bar">
+              <button type="button" class="btn-ghost-small" id="invTogglePreviewBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span id="invTogglePreviewText">Zobrazit živý náhled PDF faktury</span>
+              </button>
+            </div>
+
+            <div class="invoice-preview-wrapper" id="invoicePreviewWrapper" style="display: none;">
+              <div class="invoice-preview-paper-scale">
+                
+                <!-- A4 Standard Invoice Template Layout -->
+                <div id="invoicePrintTemplate" class="invoice-a4-page">
+                  <div class="inv-top-row">
+                    <div class="inv-top-left"></div>
+                    <div class="inv-top-right">
+                      <div class="inv-title-row">
+                        <span class="inv-title-word">Faktura</span>
+                        <span class="inv-number-val" id="invPreviewNumber">20260101</span>
+                      </div>
+                      <div class="inv-header-line"></div>
+                      <div class="inv-dates-table">
+                        <div class="inv-date-row">
+                          <span class="inv-lbl-italic">Datum vystavení:</span>
+                          <span class="inv-val" id="invPreviewIssueDate">31.01.2026</span>
+                        </div>
+                        <div class="inv-date-row">
+                          <span class="inv-lbl-italic">Datum splatnosti:</span>
+                          <span class="inv-val" id="invPreviewDueDate">14.02.2026</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="inv-parties-row">
+                    <!-- Left: Supplier -->
+                    <div class="inv-supplier-col">
+                      <div class="inv-section-title">Dodavatel</div>
+                      <div class="inv-party-name" id="invPreviewSuppName">Jméno Dodavatele</div>
+                      <div class="inv-party-street" id="invPreviewSuppStreet">Ulice 123</div>
+                      <div class="inv-party-city" id="invPreviewSuppCity">123 45 Město</div>
+
+                      <div class="inv-spacing"></div>
+
+                      <div class="inv-kv-row"><span class="inv-lbl-italic">IČ:</span> <span class="inv-val" id="invPreviewSuppIc">12345678</span></div>
+                      <div class="inv-kv-row" id="invPreviewSuppDicRow"><span class="inv-lbl-italic">DIČ:</span> <span class="inv-val" id="invPreviewSuppDic"></span></div>
+                      <div class="inv-kv-row"><span class="inv-lbl-italic">E-mail:</span> <span class="inv-val" id="invPreviewSuppEmail">dodavatel@example.com</span></div>
+                      <div class="inv-kv-row"><span class="inv-lbl-italic">Telefon:</span> <span class="inv-val" id="invPreviewSuppPhone">+420 123 456 789</span></div>
+
+                      <div class="inv-spacing"></div>
+
+                      <div class="inv-vat-note-italic" id="invPreviewSuppVat">Nejsem plátcem DPH.</div>
+
+                      <div class="inv-spacing"></div>
+
+                      <div class="inv-section-title">Platební údaje</div>
+                      <div class="inv-payment-qr-row">
+                        <div class="inv-payment-details">
+                          <div class="inv-kv-row"><span class="inv-lbl-italic">Způsob úhrady:</span> <span class="inv-val" id="invPreviewPayMethod">převodem</span></div>
+                          <div class="inv-kv-row"><span class="inv-lbl-italic">Variabilní symbol:</span> <span class="inv-val" id="invPreviewVs">20260101</span></div>
+                          <div class="inv-kv-row"><span class="inv-lbl-italic">Číslo účtu:</span> <span class="inv-val" id="invPreviewAccount">123456789/0100</span></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right: Customer -->
+                    <div class="inv-customer-col">
+                      <div class="inv-customer-box">
+                        <div class="inv-section-title">Odběratel</div>
+                        <div class="inv-party-name" id="invPreviewCustName">Klient s.r.o.</div>
+                        <div class="inv-party-street" id="invPreviewCustStreet">Ulice 456</div>
+                        <div class="inv-party-city" id="invPreviewCustCity">123 45 Město</div>
+                        <div class="inv-party-country" id="invPreviewCustCountry">Česká republika</div>
+                      </div>
+                      <div class="inv-customer-details">
+                        <div class="inv-kv-row"><span class="inv-lbl-italic">IČ:</span> <span class="inv-val" id="invPreviewCustIc">87654321</span></div>
+                        <div class="inv-kv-row" id="invPreviewCustDicRow"><span class="inv-lbl-italic">DIČ:</span> <span class="inv-val" id="invPreviewCustDic"></span></div>
+                        <div class="inv-kv-row"><span class="inv-lbl-italic">E-mail:</span> <span class="inv-val" id="invPreviewCustEmail"></span></div>
+                        <div class="inv-kv-row"><span class="inv-lbl-italic">Telefon:</span> <span class="inv-val" id="invPreviewCustPhone"></span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Table with invoiced items -->
+                  <div class="inv-table-section">
+                    <table class="inv-items-table">
+                      <thead>
+                        <tr>
+                          <th class="th-item">Položka</th>
+                          <th class="th-qty">Množství</th>
+                          <th class="th-price">Cena/MJ</th>
+                          <th class="th-total">Celkem</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="td-item" id="invPreviewItemDesc">Fakturuji za poskytnuté služby v měsíci leden 2026</td>
+                          <td class="td-qty" id="invPreviewItemQty">10,00 MD</td>
+                          <td class="td-price" id="invPreviewItemUnitPrice">5 000,00</td>
+                          <td class="td-total" id="invPreviewItemTotal">50 000,00</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div class="inv-summary-row">
+                      <div class="inv-total-label">Celkem k úhradě Kč:</div>
+                      <div class="inv-total-val" id="invPreviewGrandTotal">50 000,00</div>
+                    </div>
+                  </div>
+                  <div class="inv-qr-code-wrapper" id="invPreviewQrWrapper">
+                    <img id="invPreviewQrCode" class="inv-qr-code-img" alt="QR Platba" crossorigin="anonymous">
+                  </div>
+
+                  <div class="inv-footer-line"></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <div class="modal-footer-left">
+              <button type="button" class="btn-cancel" id="invoiceCancelBtn">Zavřít</button>
+            </div>
+            <div class="modal-footer-right">
+              <button type="button" class="btn-primary-glow" id="invoiceGenerateBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                <span id="invoiceGenerateBtnText">Vygenerovat a uložit fakturu (PDF)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Invoice Template Settings for active tab -->
+        <div id="invoiceTemplatePanel" class="modal-tab-panel" style="display: none;">
+          <div class="modal-body invoice-body-scroll">
+            
+            <div class="tpl-sections-grid">
+              <!-- Dodavatel (Supplier) -->
+              <div class="tpl-card">
+                <h4 class="tpl-card-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span>Dodavatel</span>
+                </h4>
+                <div class="form-group">
+                  <label for="invTplSuppName">Jméno a příjmení / Firma</label>
+                  <input type="text" id="invTplSuppName" class="form-input">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplSuppStreet">Ulice a č.p.</label>
+                    <input type="text" id="invTplSuppStreet" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplSuppCity">Město a PSČ</label>
+                    <input type="text" id="invTplSuppCity" class="form-input">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplSuppIc">IČ</label>
+                    <input type="text" id="invTplSuppIc" class="form-input mono">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplSuppDic">DIČ (volitelné)</label>
+                    <input type="text" id="invTplSuppDic" class="form-input mono">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplSuppEmail">E-mail</label>
+                    <input type="text" id="invTplSuppEmail" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplSuppPhone">Telefon</label>
+                    <input type="text" id="invTplSuppPhone" class="form-input">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="invTplSuppVatNote">Klauzule o DPH</label>
+                  <input type="text" id="invTplSuppVatNote" class="form-input" placeholder="Nejsem plátcem DPH.">
+                </div>
+                <div class="form-row">
+                  <div class="form-group flex-2">
+                    <label for="invTplSuppAccount">Číslo bankovního účtu</label>
+                    <input type="text" id="invTplSuppAccount" class="form-input mono">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="invTplSuppPayMethod">Způsob úhrady</label>
+                    <input type="text" id="invTplSuppPayMethod" class="form-input" value="převodem">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Odběratel (Customer) -->
+              <div class="tpl-card">
+                <h4 class="tpl-card-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                  <span>Odběratel</span>
+                </h4>
+                <div class="form-group">
+                  <label for="invTplCustName">Název společnosti / Klienta</label>
+                  <input type="text" id="invTplCustName" class="form-input">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplCustStreet">Ulice a č.p.</label>
+                    <input type="text" id="invTplCustStreet" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplCustCity">Město a PSČ</label>
+                    <input type="text" id="invTplCustCity" class="form-input">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplCustCountry">Země</label>
+                    <input type="text" id="invTplCustCountry" class="form-input" value="Česká republika">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplClientCode">Kód odběratele (pro název souboru)</label>
+                    <input type="text" id="invTplClientCode" class="form-input mono" placeholder="např. PRJA">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplCustIc">IČ</label>
+                    <input type="text" id="invTplCustIc" class="form-input mono">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplCustDic">DIČ (volitelné)</label>
+                    <input type="text" id="invTplCustDic" class="form-input mono">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="invTplCustEmail">E-mail odběratele</label>
+                    <input type="text" id="invTplCustEmail" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label for="invTplCustPhone">Telefon odběratele</label>
+                    <input type="text" id="invTplCustPhone" class="form-input">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Default Billing Parameters -->
+            <div class="tpl-card full-width">
+              <h4 class="tpl-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>Výchozí fakturační parametry a textace</span>
+              </h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="invTplRatePerMD">Výchozí sazba za MD (Kč)</label>
+                  <input type="number" id="invTplRatePerMD" class="form-input bold-number" step="100">
+                </div>
+                <div class="form-group">
+                  <label for="invTplDueDays">Splatnost (počet dní)</label>
+                  <input type="number" id="invTplDueDays" class="form-input" min="1" max="120" value="14">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-qr-label">
+                  <input type="checkbox" id="invTplIncludeQr" checked>
+                  <span>Výchozí generování QR platby na faktuře (přes Paylibo API)</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label for="invTplItemTemplate">Vzor textu položky (podporuje značky: {mesic_cz}, {mesic}, {mesic_2d}, {rok})</label>
+                <textarea id="invTplItemTemplate" class="form-textarea" rows="2" placeholder="Fakturuji dle objednávky služeb ze dne ... za služby v měsíci {mesic_cz} {rok}"></textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <div class="modal-footer-left">
+              <button type="button" class="btn-cancel" id="invoiceTplCancelBtn">Zavřít</button>
+            </div>
+            <div class="modal-footer-right">
+              <button type="button" class="btn-primary" id="invoiceTplSaveBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span>Uložit šablonu pro tuto záložku</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="html2pdf.bundle.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

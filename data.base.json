@@ -1,0 +1,74 @@
+{
+  "tabs": [
+    {
+      "id": "tab-1",
+      "name": "Projekt A",
+      "workload": 100,
+      "events": [],
+      "invoiceTemplate": {
+        "clientCode": "PRJA",
+        "supplier": {
+          "name": "Jméno Dodavatele",
+          "street": "Ulice 123",
+          "city": "123 45 Město",
+          "ic": "",
+          "dic": "",
+          "email": "dodavatel@example.com",
+          "phone": "+420 123 456 789",
+          "vatNote": "Nejsem plátcem DPH.",
+          "bankAccount": "123456789/0100",
+          "paymentMethod": "převodem"
+        },
+        "customer": {
+          "name": "Klient s.r.o.",
+          "street": "Ulice 456",
+          "city": "123 45 Město",
+          "country": "Česká republika",
+          "ic": "",
+          "dic": "",
+          "email": "klient@example.com",
+          "phone": ""
+        },
+        "ratePerMD": 5000,
+        "dueDays": 14,
+        "itemTemplate": "Fakturuji za služby v měsíci {mesic_cz} {rok}",
+        "includeQr": true
+      }
+    },
+    {
+      "id": "tab-2",
+      "name": "Projekt B",
+      "workload": 100,
+      "events": [],
+      "invoiceTemplate": {
+        "clientCode": "PRJB",
+        "supplier": {
+          "name": "Jméno Dodavatele",
+          "street": "Ulice 123",
+          "city": "123 45 Město",
+          "ic": "",
+          "dic": "",
+          "email": "dodavatel@example.com",
+          "phone": "+420 123 456 789",
+          "vatNote": "Nejsem plátcem DPH.",
+          "bankAccount": "123456789/0100",
+          "paymentMethod": "převodem"
+        },
+        "customer": {
+          "name": "Partner s.r.o.",
+          "street": "Ulice 789",
+          "city": "123 45 Město",
+          "country": "Česká republika",
+          "ic": "",
+          "dic": "",
+          "email": "partner@example.com",
+          "phone": ""
+        },
+        "ratePerMD": 5000,
+        "dueDays": 14,
+        "itemTemplate": "Fakturuji za služby v měsíci {mesic_cz} {rok}",
+        "includeQr": true
+      }
+    }
+  ]
+}
